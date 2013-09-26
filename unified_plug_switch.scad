@@ -9,7 +9,8 @@ plug_hole_width = 40;
 
 cover();
 module cover() {
-  % translate([wall_thickness,wall_thickness,cavity_depth+wall_thickness]) psu();
+  % translate([0,0,cavity_depth+end_thickness]) psu(); // FIXME: should be by end_thickness, not wall_thickness
+  translate([-total_width/2,-total_height/2,0])
   difference() {
     cube([total_width,total_height,get_total_depth(cavity_depth)]);
 
@@ -17,7 +18,7 @@ module cover() {
     translate([wall_thickness,wall_thickness,end_thickness]) cube([psu_width,psu_height,psu_length]);
 
     // mounting holes
-    translate([0,wall_thickness + side_mount_hole_from_top,cavity_depth + side_mount_hole_from_end + 2]) {
+    translate([0,wall_thickness + side_mount_hole_from_top,cavity_depth + side_mount_hole_from_end + end_thickness]) {
       translate([0,0,0])                rotate([90,0,0]) rotate([0,90,0]) cylinder(r=4*da6, h=psu_width * 4, center=true, $fn=6);
       translate([0,side_mount_hole_spacing,0]) rotate([90,0,0]) rotate([0,90,0]) cylinder(r=4*da6, h=psu_width * 4, center=true, $fn=6);
     }

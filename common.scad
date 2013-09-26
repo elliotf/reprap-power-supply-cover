@@ -31,7 +31,7 @@ total_height = psu_height + wall_thickness * 2;
 // This is to leave room for the plug and cables.
 cavity_depth = 10;
 
-function get_total_depth(cavity) = cavity + wall_thickness + side_mount_hole_from_end + mount_hole_diam/2 + wall_thickness * 2;
+function get_total_depth(cavity) = cavity + end_thickness + side_mount_hole_from_end + mount_hole_diam/2 + wall_thickness * 2;
 
 wire_hole_width  = 12;
 wire_hole_height = 6;
@@ -67,6 +67,7 @@ module vent_holes() {
 }
 
 module psu() {
+  translate([-psu_width/2,-psu_height/2,0])
   difference() {
     cube([psu_width,psu_height,psu_length]);
     translate([(psu_width - screw_terminal_width) / 2, -1, -1]) cube([screw_terminal_width,screw_terminal_height + 1,screw_terminal_inset + 1]);
