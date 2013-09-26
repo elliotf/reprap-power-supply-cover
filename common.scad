@@ -1,3 +1,8 @@
+left = -1;
+right = 1;
+front = -1;
+rear = 1;
+
 // adjust these numbers as necessary
 psu_length = 215;
 psu_width = 114;
@@ -18,7 +23,8 @@ side_mount_hole_from_end = 33;
 side_mount_hole_spacing = 25;
 side_mount_hole_from_top = 13;
 
-mount_hole_diam = 3.5;
+mount_hole_diam = 4;
+cover_mount_hole_diam = 4.1;
 
 // Don't make this too thin; plug insertion/removal puts a fair amount of strain on the part
 wall_thickness = 2;
@@ -28,8 +34,8 @@ total_width = psu_width + wall_thickness * 2;
 total_height = psu_height + wall_thickness * 2;
 
 // How far the end of the cover should be from the end of the PSU.
-// This is to leave room for the plug and cables.
-cavity_depth = 10;
+// This is to leave room for the plug and cables (if necessary)
+cavity_depth = 0;
 
 function get_total_depth(cavity) = cavity + end_thickness + side_mount_hole_from_end + mount_hole_diam/2 + wall_thickness * 2;
 
@@ -37,6 +43,20 @@ wire_hole_width  = 12;
 wire_hole_height = 6;
 
 da6 = 1 / cos(180 / 6) / 2;
+
+module mount_hole() {
+  rotate([0,90,0]) rotate([0,0,90])
+    cylinder(r=cover_mount_hole_diam*da6,h=total_width+1,center=true,$fn=6);
+}
+
+module mount_holes() {
+  from_center = psu_height/2-side_mount_hole_spacing/2-side_mount_hole_from_top;
+
+  translate([0,-from_center,end_thickness+side_mount_hole_from_end+cavity_depth])
+    for(side=[front,rear]) {
+      translate([0,-side_mount_hole_spacing/2*side,0]) mount_hole();
+    }
+}
 
 module vent_holes() {
   // ventilation/material saving holes on the side
