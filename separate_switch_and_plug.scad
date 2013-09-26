@@ -1,33 +1,6 @@
-psu_length = 215;
-psu_width = 114;
-psu_height = 50;
-psu_terminal_inset = 17;
-psu_terminal_width = 110;
-psu_terminal_height = 25;
+include <common.scad>;
 
-psu_mount_hole_spacing_width = 50;
-psu_mount_hole_spacing_length = 150;
-psu_mount_hole_spacing_from_end = 32.5;
-psu_mount_hole_spacing_from_side = 32;
-
-psu_hole_from_end = 33;
-psu_hole_spacing = 25;
-psu_hole_from_top = 13;
-
-hole_diam = 3.5;
-
-clearance = .5; // reduce clearance from .5; it's too much
-
-wall_thickness = 2;
-
-total_width = psu_width + clearance * 2 + wall_thickness * 2;
-inner_width = total_width - wall_thickness * 2;
-
-total_height = psu_height + clearance * 2 + wall_thickness * 2;
-inner_height = total_height - wall_thickness * 2;
-
-depth = 22;
-total_depth = depth + wall_thickness + psu_hole_from_end + hole_diam/2 + wall_thickness * 2;
+cavity_depth = 22;
 
 switch_diam = 20.75;
 wire_hole_width  = 12;
@@ -38,14 +11,14 @@ plug_height = 31.5;
 
 cover();
 module cover() {
-  % translate([wall_thickness+clearance,wall_thickness+clearance,depth+wall_thickness]) psu();
+  % translate([wall_thickness,wall_thickness,cavity_depth+wall_thickness]) psu();
   difference() {
-    cube([total_width,total_height,total_depth]);
+    cube([total_width,total_height,get_total_depth(cavity_depth)]);
 
     // mounting holes
-    translate([0,0,depth + psu_hole_from_end + 2]) {
-      translate([0,wall_thickness + clearance + psu_hole_from_top,0]) rotate([0,90,0]) cylinder(r=2, h=psu_width * 4, center=true, $fn=6);
-      translate([0,wall_thickness + clearance + psu_hole_from_top + psu_hole_spacing,0]) rotate([0,90,0]) cylinder(r=2, h=psu_width * 4, center=true, $fn=6);
+    translate([0,0,cavity_depth + side_mount_hole_from_end + 2]) {
+      translate([0,wall_thickness + side_mount_hole_from_top,0]) rotate([0,90,0]) cylinder(r=2, h=psu_width * 4, center=true, $fn=6);
+      translate([0,wall_thickness + side_mount_hole_from_top + side_mount_hole_spacing,0]) rotate([0,90,0]) cylinder(r=2, h=psu_width * 4, center=true, $fn=6);
     }
 
     // plug hole
@@ -59,20 +32,20 @@ module cover() {
     translate([wall_thickness,total_height-wire_hole_width-wall_thickness*5,-1]) cube([wire_hole_height,wire_hole_width,psu_length]);
 
     // main cavity
-    translate([wall_thickness,wall_thickness,wall_thickness]) cube([inner_width,inner_height,psu_length]);
+    translate([wall_thickness,wall_thickness,wall_thickness]) cube([psu_width,psu_height,psu_length]);
 
     // shorter bottom
-    translate([wall_thickness + 6,wall_thickness*4,wall_thickness*7.5+depth]) cube([inner_width - 12,inner_height,psu_length]);
+    translate([wall_thickness + 6,wall_thickness*4,wall_thickness*7.5+cavity_depth]) cube([psu_width - 12,psu_height,psu_length]);
 
     // shorter top
-    translate([wall_thickness + 6,wall_thickness*-4,wall_thickness*4+depth+psu_terminal_inset]) cube([inner_width - 12,inner_height,psu_length]);
+    translate([wall_thickness + 6,wall_thickness*-4,wall_thickness*4+cavity_depth+screw_terminal_inset]) cube([psu_width - 12,psu_height,psu_length]);
 
     // ventilation/material saving holes on the side
     // big holes
-    //translate([0,total_height / 2, depth + psu_terminal_inset + 1]) rotate([90,0,0]) rotate([0,90,0]) cylinder(r=14, h=psu_width * 4, center=true, $fn=6);
+    //translate([0,total_height / 2, depth + screw_terminal_inset + 1]) rotate([90,0,0]) rotate([0,90,0]) cylinder(r=14, h=psu_width * 4, center=true, $fn=6);
     for(from_end=[0:6]) {
       for(from_top=[.8,.45,.1]) {
-        translate([-1,inner_height*from_top-wall_thickness,wall_thickness*2+7.5*from_end]) {
+        translate([-1,psu_height*from_top-wall_thickness,wall_thickness*2+7.5*from_end]) {
           cube([psu_width*2,13,3.5]);
         }
       }
@@ -128,18 +101,18 @@ module switch_hole() {
 module psu() {
   difference() {
     cube([psu_width,psu_height,psu_length]);
-    translate([(psu_width - psu_terminal_width) / 2, -1, -1]) cube([psu_terminal_width,psu_terminal_height + 1,psu_terminal_inset + 1]);
+    translate([(psu_width - screw_terminal_width) / 2, -1, -1]) cube([screw_terminal_width,screw_terminal_height + 1,screw_terminal_inset + 1]);
 
     // cover mounting holes
-    translate([0,psu_hole_from_top,psu_hole_from_end]) rotate([0,90,0]) cylinder(h=psu_width * 2,r=hole_diam/2, center=true);
-    translate([0,psu_hole_from_top + psu_hole_spacing,psu_hole_from_end]) rotate([0,90,0]) cylinder(h=psu_width * 2,r=hole_diam/2, center=true);
+    translate([0,side_mount_hole_from_top,side_mount_hole_from_end]) rotate([0,90,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
+    translate([0,side_mount_hole_from_top + side_mount_hole_spacing,side_mount_hole_from_end]) rotate([0,90,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
 
     // psu mounting holes (terminal side)
-    translate([psu_mount_hole_spacing_from_side,0,psu_mount_hole_spacing_from_end]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=hole_diam/2, center=true);
-    translate([psu_mount_hole_spacing_from_side + psu_mount_hole_spacing_width,0,psu_mount_hole_spacing_from_end]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=hole_diam/2, center=true);
+    translate([bottom_mount_hole_spacing_from_side,0,bottom_mount_hole_spacing_from_end]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
+    translate([bottom_mount_hole_spacing_from_side + bottom_mount_hole_spacing_width,0,bottom_mount_hole_spacing_from_end]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
 
     // psu mounting holes (blank side)
-    translate([psu_mount_hole_spacing_from_side,0,psu_mount_hole_spacing_from_end + psu_mount_hole_spacing_length]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=hole_diam/2, center=true);
-    translate([psu_mount_hole_spacing_from_side + psu_mount_hole_spacing_width,0,psu_mount_hole_spacing_from_end + psu_mount_hole_spacing_length]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=hole_diam/2, center=true);
+    translate([bottom_mount_hole_spacing_from_side,0,bottom_mount_hole_spacing_from_end + bottom_mount_hole_spacing_length]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
+    translate([bottom_mount_hole_spacing_from_side + bottom_mount_hole_spacing_width,0,bottom_mount_hole_spacing_from_end + bottom_mount_hole_spacing_length]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
   }
 }
