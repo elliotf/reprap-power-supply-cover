@@ -9,6 +9,8 @@ plug_hole_from_switch_end = 22.5;
 plug_hole_width = 40;
 
 top_bottom_support_width = 6;
+top_shortness = screw_terminal_inset;
+bottom_shortness = cavity_depth-wall_thickness;
 
 cover();
 module cover() {
@@ -23,6 +25,14 @@ module cover() {
 
     mount_holes();
 
+    translate([0,0,total_depth]) {
+      translate([0,-psu_height/2,0])
+        cube([psu_width - top_bottom_support_width*2,wall_thickness*3,top_shortness*2],center=true);
+
+      translate([0,psu_height/2,0])
+        cube([psu_width - top_bottom_support_width*2,wall_thickness*3,bottom_shortness*2],center=true);
+    }
+
     translate([-total_width/2,-total_height/2,0]) {
       // plug hole
       translate([total_width - wall_thickness*2 - plug_height/2 - 3, psu_height/2 + 2, -1]) {
@@ -32,15 +42,8 @@ module cover() {
       vent_holes();
 
       // wire hole
-      translate([wall_thickness,total_height-wire_hole_width-wall_thickness*5,-1]) cube([wire_hole_height,wire_hole_width,psu_length]);
-
-      // shorter bottom
-      translate([wall_thickness + 6,wall_thickness*4,wall_thickness*7.5+cavity_depth])
-        cube([psu_width - top_bottom_support_width*2,psu_height,psu_length]);
-
-      // shorter top
-      translate([wall_thickness + 6,wall_thickness*-4,wall_thickness*4+cavity_depth+screw_terminal_inset])
-        cube([psu_width - top_bottom_support_width*2,psu_height,psu_length]);
+      translate([wall_thickness,total_height-wire_hole_width-wall_thickness*5,-1])
+        cube([wire_hole_height,wire_hole_width,psu_length]);
     }
   }
 }
