@@ -39,6 +39,7 @@ cavity_depth = 0;
 
 function get_total_depth(cavity) = cavity + end_thickness + side_mount_hole_from_end + mount_hole_diam/2 + wall_thickness * 2;
 
+// Hole to feed wires from the PSU to your electronics
 wire_hole_width  = 12;
 wire_hole_height = 6;
 
@@ -93,12 +94,16 @@ module psu() {
     translate([(psu_width - screw_terminal_width) / 2, -1, -1]) cube([screw_terminal_width,screw_terminal_height + 1,screw_terminal_inset + 1]);
 
     // cover mounting holes
-    translate([0,side_mount_hole_from_top,side_mount_hole_from_end]) rotate([0,90,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
-    translate([0,side_mount_hole_from_top + side_mount_hole_spacing,side_mount_hole_from_end]) rotate([0,90,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
+    translate([0,side_mount_hole_from_top,side_mount_hole_from_end]) rotate([0,90,0])
+      cylinder(h=psu_width * 4,r=mount_hole_diam/2, center=true);
+    translate([0,side_mount_hole_from_top + side_mount_hole_spacing,side_mount_hole_from_end]) rotate([0,90,0])
+      cylinder(h=psu_width * 4,r=mount_hole_diam/2, center=true);
 
     // psu mounting holes (terminal side)
-    translate([bottom_mount_hole_spacing_from_side,0,bottom_mount_hole_spacing_from_end]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
-    translate([bottom_mount_hole_spacing_from_side + bottom_mount_hole_spacing_width,0,bottom_mount_hole_spacing_from_end]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
+    translate([bottom_mount_hole_spacing_from_side,0,bottom_mount_hole_spacing_from_end]) rotate([90,0,0])
+      cylinder(h=psu_width * 4,r=mount_hole_diam/2, center=true);
+    translate([bottom_mount_hole_spacing_from_side + bottom_mount_hole_spacing_width,0,bottom_mount_hole_spacing_from_end]) rotate([90,0,0])
+      cylinder(h=psu_width * 4,r=mount_hole_diam/2, center=true);
 
     // psu mounting holes (blank side)
     translate([bottom_mount_hole_spacing_from_side,0,bottom_mount_hole_spacing_from_end + bottom_mount_hole_spacing_length]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
