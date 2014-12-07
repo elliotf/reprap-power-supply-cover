@@ -1,32 +1,14 @@
 include <common.scad>;
+include <util.scad>;
 
-cavity_depth = 30;
-total_depth = get_total_depth(cavity_depth);
+extrusion_width      = 0.5;
+extrusion_height     = 0.34;
 
-plug_width = 27.5;
-plug_height = 47.5;
-plug_hole_from_switch_end = 22.5;
-plug_hole_width = 40;
-
-side_brace_width = 6;
-top_shortness = screw_terminal_inset;
-bottom_shortness = cavity_depth-wall_thickness;
-
-module mount_holes() {
-  from_center = psu_height/2-side_mount_hole_spacing/2-side_mount_hole_from_top;
-
-  translate([0,-from_center,end_thickness+side_mount_hole_from_end+cavity_depth])
-    for(side=[front,rear]) {
-      translate([0,-side_mount_hole_spacing/2*side,0]) {
-        mount_hole();
-      }
-    }
-}
+spacer            = 0.5;
+plug_width        = 27   + spacer;
+plug_length       = 47.5 + spacer;
 
 module plug_hole() {
-  spacer            = 0.5;
-  plug_width        = 27   + spacer;
-  plug_length       = 47.5 + spacer;
   plug_angle_length = 8;
   plug_angle_offset = sqrt(pow(plug_angle_length,2)/2);
   plug_hole_spacing = 40;
@@ -47,7 +29,7 @@ module plug_hole() {
 
     // angled corners on plug side
     for (side=[1,-1]) {
-      translate([-plug_height/2+plug_angle_offset,(plug_width/2-plug_angle_offset)*side,0]) {
+      translate([-plug_length/2+plug_angle_offset,(plug_width/2-plug_angle_offset)*side,0]) {
         hole(plug_angle_length,hole_height,4);
       }
     }
@@ -57,11 +39,10 @@ module plug_hole() {
 module cover() {
   spacer               = 0.2;
   dist_from_psu_to_end = 30;
-  plug_dist_from_side  = 8;
+  plug_dist_from_side  = 7;
 
-  extrusion_width      = 0.5;
-  extrusion_height     = 0.34;
   thick_wall_thickness = extrusion_width  * 4;
+  thin_wall_thickness  = extrusion_width  * 2;
   end_thickness        = extrusion_height * 6;
 
   cavity_width  = psu_width  + spacer;
@@ -82,7 +63,7 @@ module cover() {
 
   module body() {
     width  = cavity_width  + thick_wall_thickness * 2;
-    height = cavity_height + thick_wall_thickness * 2;
+    height = cavity_height + thin_wall_thickness * 2;
 
     translate([0,0,cavity_length/2-end_thickness/2]) {
       cube([width,height,cavity_length+end_thickness],center=true);
@@ -92,7 +73,9 @@ module cover() {
         for(end=[front,rear]) {
           hull() {
             translate([width/2*side,(height/2-thick_wall_thickness)*end,0]) {
-              hole(thick_wall_thickness*2,cavity_length+end_thickness,16);
+              rotate([0,0,22.5/2]) {
+                hole(thick_wall_thickness*2,cavity_length+end_thickness,16);
+              }
             }
             translate([width*.4*side,0,0]) {
               hole(thick_wall_thickness*2,cavity_length+end_thickness,16);
@@ -141,7 +124,7 @@ module cover() {
     }
 
     // plug
-    translate([cavity_width/2-plug_height/2-plug_dist_from_side,0,0]) {
+    translate([cavity_width/2-plug_length/2-plug_dist_from_side,0,0]) {
       scale([1,1,10]) {
         plug_hole();
       }
@@ -205,10 +188,40 @@ module cover() {
     }
   }
 
-  difference() {
-    body();
-    holes();
+  translate([0,0,end_thickness]) {
+    difference() {
+      body();
+      holes();
+    }
+  }
+}
+
+module spacer() {
+  spacer_height   = extrusion_height * 7;
+  inner_diam      = mount_hole_diam+0.25;
+  outer_diam      = inner_diam + extrusion_width*9;
+  extrusion_width = 0.5;
+
+  module body() {
+    hole(outer_diam,spacer_height,72);
+  }
+
+  module holes() {
+    hole(inner_diam,spacer_height+1,72);
+  }
+
+  translate([0,0,spacer_height/2]) {
+    difference() {
+      body();
+      holes();
+    }
   }
 }
 
 cover();
+
+for(i=[-.375,-.125,.125,.375]) {
+  translate([psu_width*i,-psu_height*.7,0]) {
+    spacer();
+  }
+}

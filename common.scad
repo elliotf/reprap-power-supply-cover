@@ -110,11 +110,3 @@ module psu() {
     translate([bottom_mount_hole_spacing_from_side + bottom_mount_hole_spacing_width,0,bottom_mount_hole_spacing_from_end + bottom_mount_hole_spacing_length]) rotate([90,0,0]) cylinder(h=psu_width * 2,r=mount_hole_diam/2, center=true);
   }
 }
-
-function accurate_diam(diam,sides=16) = 1 / cos(180 / sides) * diam;
-
-module hole(diam,height,sides=16) {
-  diam = accurate_diam(diam,sides);
-
-  cylinder(r=diam/2,h=height,center=true,$fn=sides);
-}
