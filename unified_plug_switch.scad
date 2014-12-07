@@ -34,6 +34,7 @@ module topbottom_vent_holes() {
   function get_x(index) = (start_index*spacing_across/2+((index-start_index)*spacing_across));
   function get_z(index) = end_thickness+hole_height/2+wall_thickness+spacing_down*index;
 
+  /*
   for(side=[left,right]) {
     for(x=[start_index:floor(num_holes_across/2)]) {
       for(z=[0:num_holes_down-1]) {
@@ -42,6 +43,7 @@ module topbottom_vent_holes() {
       }
     }
   }
+  */
 }
 
 module side_vent_holes() {
@@ -65,6 +67,7 @@ module side_vent_holes() {
   function get_y(index) = (start_index*spacing_across/2+((index-start_index)*spacing_across));
   function get_z(index) = end_thickness+hole_height+wall_thickness+spacing_down*index;
 
+  /*
   for(side=[left,right]) {
     for(y=[start_index:floor(num_holes_across/2)]) {
       for(z=[0:num_holes_down-1]) {
@@ -73,6 +76,7 @@ module side_vent_holes() {
       }
     }
   }
+  */
 }
 
 module end_vent_holes() {
