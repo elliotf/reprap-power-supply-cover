@@ -192,9 +192,16 @@ module cover() {
       }
     }
 
-    // not sure why I'm doing this, but it *seems* like a good idea
-    translate([0,-cavity_height/2,cavity_length]) {
-      cube([3,thick_wall_thickness*2,cavity_length],center=true);
+    // material savings and mount hole access
+    material_saving = 18;
+    hull() {
+      translate([0,0,cavity_length]) {
+        cube([cavity_width-18*2,cavity_height*2,18*2],center=true);
+
+        translate([0,0,1]) {
+          cube([cavity_width,cavity_height*2,2],center=true);
+        }
+      }
     }
   }
 
