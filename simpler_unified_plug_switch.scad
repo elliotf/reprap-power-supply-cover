@@ -12,20 +12,6 @@ side_brace_width = 6;
 top_shortness = screw_terminal_inset;
 bottom_shortness = cavity_depth-wall_thickness;
 
-module vent_holes() {
-  hole_from_top_bottom = 5;
-  hole_length = total_height-wall_thickness*2-hole_from_top_bottom*2;
-  hole_width  = 4;
-  hole_space_between = 6;
-  hole_spacing = hole_width + hole_space_between;
-
-  for(i=[0:4]) {
-    translate([i*-hole_spacing-hole_width,0,end_thickness/2]) {
-      cube([hole_width,hole_length,end_thickness+1],center=true);
-    }
-  }
-}
-
 module mount_holes() {
   from_center = psu_height/2-side_mount_hole_spacing/2-side_mount_hole_from_top;
 
@@ -35,67 +21,6 @@ module mount_holes() {
         mount_hole();
       }
     }
-}
-
-module old_cover() {
-  plug_dist_from_wall = 5;
-
-  difference() {
-    translate([0,0,total_depth/2])
-      cube([total_width,total_height,total_depth],center=true);
-
-    // main cavity
-    translate([0,0,end_thickness+total_depth/2])
-      cube([psu_width,psu_height,total_depth],center=true);
-
-    mount_holes();
-
-    translate([0,0,total_depth]) {
-      // material saving top
-      translate([0,-psu_height/2,0])
-        cube([psu_width - side_brace_width*2,wall_thickness*3,top_shortness*2],center=true);
-
-      // material saving bottom
-      translate([0,psu_height/2,0])
-        cube([psu_width - side_brace_width*2,wall_thickness*3,bottom_shortness*2],center=true);
-    }
-
-    vent_holes();
-
-    // plug
-    translate([total_width/2-wall_thickness-plug_height/2-plug_dist_from_wall,0,0])
-      scale([1,1,10]) rotate([0,0,180]) plug_hole();
-
-    // wire hole
-    translate([-total_width/2+wall_thickness+wire_hole_height/2,total_height/4-wire_hole_width/2,end_thickness/2])
-      cube([wire_hole_height,wire_hole_width,end_thickness+1],center=true);
-  }
-}
-
-module old_plug_hole() {
-  spacer            = 0.5;
-  plug_width        = 27   + spacer;
-  plug_length       = 47.5 + spacer;
-  plug_angle_length = 8;
-
-  // mounting holes
-  for (side=[1,-1]) {
-    translate([-1*(plug_height/2-plug_hole_from_switch_end),plug_hole_width/2*side,0])
-      hole(3.7,wall_thickness*2,16);
-  }
-
-  difference() {
-    cube([plug_height,plug_width,wall_thickness],center=true);
-
-    // angled corners on plug side
-    for (side=[1,-1]) {
-      translate([plug_height/2,plug_width/2*side,0]) {
-        rotate([0,0,45]) {
-          cube([8.5,8.5,wall_thickness*2],center=true);
-        }
-      }
-    }
-  }
 }
 
 module plug_hole() {
@@ -123,7 +48,6 @@ module plug_hole() {
     // angled corners on plug side
     for (side=[1,-1]) {
       translate([-plug_height/2+plug_angle_offset,(plug_width/2-plug_angle_offset)*side,0]) {
-        //cylinder(r=plug_angle_length/2,h=100,center=true,$fn=4);
         hole(plug_angle_length,hole_height,4);
       }
     }
