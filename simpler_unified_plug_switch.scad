@@ -124,8 +124,17 @@ module cover() {
     for(side=[front,rear]) {
       translate([0,side_mount_hole_spacing/2*side,dist_from_psu_to_end+side_mount_hole_from_end]) {
         rotate([0,90,0]) {
-          rotate([0,0,22.5]) {
-            hole(mount_hole_diam,cavity_width*2,8);
+          hull() {
+            translate([0,1*side,0]) {
+              rotate([0,0,22.5]) {
+                hole(mount_hole_diam,cavity_width*2,8);
+              }
+            }
+            translate([0,.5*-side,0]) {
+              rotate([0,0,22.5]) {
+                hole(mount_hole_diam,cavity_width*2,8);
+              }
+            }
           }
         }
       }
