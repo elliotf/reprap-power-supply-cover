@@ -59,33 +59,35 @@ module cover() {
   dist_from_psu_to_end = 30;
   plug_dist_from_side  = 8;
 
+  extrusion_width      = 0.5;
+  extrusion_height     = 0.34;
+  thick_wall_thickness = extrusion_width  * 4;
+  end_thickness        = extrusion_height * 6;
+
   cavity_width  = psu_width  + spacer;
   cavity_height = psu_height + spacer;
-  cavity_length = dist_from_psu_to_end + side_mount_hole_from_end + mount_hole_diam/2 + end_thickness;
+  cavity_length = dist_from_psu_to_end + side_mount_hole_from_end + mount_hole_diam/2 + end_thickness * 2;
 
   side_mount_hole_from_end = 33;
   side_mount_hole_spacing  = 25;
   side_mount_hole_from_top = 13;
 
-  extrusion_width      = 0.5;
-  extrusion_height     = 0.34;
-  thick_wall_thickness = extrusion_width  * 4;
-  thin_wall_thickness  = extrusion_width  * 2;
-  end_thickness        = extrusion_height * 6;
-
-  total_width  = cavity_width  + wall_thickness * 2;
-  total_height = cavity_height + thin_wall_thickness * 2;
-
   wire_hole_width  = 6;
   wire_hole_height = 12;
+  wire_hole_pos_y  = wire_hole_height/2;
+
+  zip_tie_hole_width   = 2;
+  zip_tie_hole_height  = 3;
+  zip_tie_hole_spacing = 8;
 
   module body() {
     width  = cavity_width  + thick_wall_thickness * 2;
-    height = cavity_height + thin_wall_thickness * 2;
+    height = cavity_height + thick_wall_thickness * 2;
 
-    translate([0,0,cavity_length/2-end_thickness]) {
+    translate([0,0,cavity_length/2-end_thickness/2]) {
       cube([width,height,cavity_length+end_thickness],center=true);
 
+      // reinforced corners
       for(side=[left,right]) {
         for(end=[front,rear]) {
           hull() {
@@ -96,6 +98,17 @@ module cover() {
               hole(thick_wall_thickness*2,cavity_length+end_thickness,16);
             }
           }
+        }
+      }
+    }
+
+    // reinforced zip tie hole
+    reinforcement_height = 20;
+    hull() {
+      translate([left*(width/2),wire_hole_pos_y,reinforcement_height/2-end_thickness]) {
+        hole(thick_wall_thickness*2,reinforcement_height-end_thickness*2,16);
+        translate([thick_wall_thickness/2,0,0]) {
+          cube([thick_wall_thickness,zip_tie_hole_spacing-zip_tie_hole_width,reinforcement_height],center=true);
         }
       }
     }
@@ -126,21 +139,19 @@ module cover() {
     }
 
     // wire retainer/hole
-    zip_tie_hole_width  = 3;
-    zip_tie_hole_height = 5;
-    translate([left*(cavity_width/2-wire_hole_width/2),wire_hole_height/2,0]) {
+    translate([left*(cavity_width/2-wire_hole_width/2-0),wire_hole_height/2,0]) {
       hull() {
         for(side=[front,rear]) {
           translate([0,side*(wire_hole_height/2-wire_hole_width/2),0]) {
-            rotate([0,0,90]) {
-              hole(wire_hole_width,cavity_length,42);
+            rotate([0,0,22.5/4]) {
+              hole(wire_hole_width,cavity_length,32);
             }
           }
         }
       }
 
       for(side=[front,rear]) {
-        translate([0,(wire_hole_height/2)*side,end_thickness+1.5]) {
+        translate([0,(zip_tie_hole_spacing/2)*side,end_thickness+1.5]) {
           hull() {
             rotate([0,90,0]) {
               rotate([0,0,22.5]) {
