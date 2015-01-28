@@ -57,7 +57,7 @@ module side_vent_holes() {
   total_avail_down = total_depth - end_thickness*3 - mount_hole_diam - hole_height;
 
   num_holes_across = floor((total_avail_across+space_between_across) / spacing_across);
-  num_holes_down = floor((total_avail_down+space_between_down)/spacing_down);
+  num_holes_down = 1; //floor((total_avail_down+space_between_down)/spacing_down);
 
   echo(num_holes_down);
 
@@ -67,16 +67,12 @@ module side_vent_holes() {
   function get_y(index) = (start_index*spacing_across/2+((index-start_index)*spacing_across));
   function get_z(index) = end_thickness+hole_height+wall_thickness+spacing_down*index;
 
-  /*
-  for(side=[left,right]) {
-    for(y=[start_index:floor(num_holes_across/2)]) {
-      for(z=[0:num_holes_down-1]) {
-        translate([0,side*get_y(y),get_z(z)])
-          cube([total_width+1,hole_width,hole_height],center=true);
-      }
+  for(y=[start_index:floor(num_holes_across/2)]) {
+    for(z=[0:num_holes_down-1]) {
+      translate([-total_width/2+wall_thickness/2,get_y(y),get_z(z)])
+        cube([wall_thickness*2,hole_width,hole_height],center=true);
     }
   }
-  */
 }
 
 module end_vent_holes() {
